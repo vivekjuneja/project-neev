@@ -1,4 +1,4 @@
-Goals :-
+**Goals** :-
 
 1. New Projects can avoid building boilerplate infrastructure as much as possible
 2. New Projects can reliably provision, use and de-provision the boilerplate infrastructure for their projects
