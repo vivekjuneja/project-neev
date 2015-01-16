@@ -33,4 +33,7 @@
 16. Access to Load Testing and Analysis based on Apache Jmeter - Clustered Master-Slave setup ready to provision for any new Project
 17. Ability to integrate with Netflix OSS components
   - Simian Army - to allow for testing infrastructure failure options easily and with reliability
+18. Audit Trail for all changes made by users 
+19. Secure Token Service to generate Keys for accessing API, Instances, and Admin Console
+  
 
