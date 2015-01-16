@@ -11,10 +11,13 @@
   - Python Stack
 6. Integration with Continuous Integration infrastructure
 7. Out of the box support for Application, Service and Infrastructure Monitoring and Notification 
+  - Tracing Call Stacks
+  - Measure response time for services
+  - SLA Management
 8. Role based access control
 9. Most aspects are API Enabled to allow for automation
 10. Extensible to add new integration points, new technology stacks, and future projects
-11. Ability to replace existing components part of this infrastructure with newer, better versions without major fuss or issues. 
+11. Ability to replace existing components part of this infrastructure with newer, better versions without major fuss or issues.
 12. Out of the box support for Log Aggregation, Analysis and Dashboard
   - Support for multiple polyglot Log sources from different providers - Log4J, Log4JS, Tomcat Logs, Apache Logs, etc. 
 13. Lots of standard out of the box support 
