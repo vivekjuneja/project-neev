@@ -1,6 +1,7 @@
-Goals:-
+Goals :-
+
 1. New Projects can avoid building boilerplate infrastructure as much as possible
-2. New Projects can reliably provision, use and deprovision the boilerplate infrastructure for their projects
+2. New Projects can reliably provision, use and de-provision the boilerplate infrastructure for their projects
 3. New Projects can add or extend boilerplate infrastructure with their own better customizations to improve the system
 4. Access to third party or other developers to extend and make this infrastructure better by democratising contribution 
 5. New innovation and technologies can be added or existing toolsets can be replaced with better functioning systems at any point of time without worries
