@@ -147,34 +147,42 @@ Mesos Cluster with Marathon is installed on an individual VM that uses Docker Co
 
 6. Commands that can be handy when testing Marathon :-
 
-# Deploying a Single App
-curl -X POST -H "Content-Type: application/json" http://<MARATHON_URL>/v2/apps -d@<DEPLOYMENT_JSON_FILE>
-
-# Deploying an Application that is composed of many entities
-curl -X POST -H "Content-Type: application/json" http://<MARATHON_URL>/v2/groups -d@<DEPLOYMENT_JSON_FILE>
-
-# Remove the current Application from the Mesos 
-curl -X DELETE -H "Content-Type: application/json" http://<MARATHON_URL>/v2/apps/<APP_DESCRIPTOR> -d@<DEPLOYMENT_JSON_FILE>
+ a. Deploying a Single App
+  ```
+  curl -X POST -H "Content-Type: application/json" http://<MARATHON_URL>/v2/apps -d@<DEPLOYMENT_JSON_FILE>
+  ```
+   
+ b. Deploying an Application that is composed of many tiers - app, db, caching etc. 
+  ```
+   curl -X POST -H "Content-Type: application/json" http://<MARATHON_URL>/v2/groups -d@<DEPLOYMENT_JSON_FILE>
+  ```
+  
+ c. Remove the pre-existing application deployed on Mesos
+ ```
+  curl -X DELETE -H "Content-Type: application/json" http://<MARATHON_URL>/v2/apps/<APP_DESCRIPTOR> -d@<DEPLOYMENT_JSON_FILE>
+  ```
 
 *Preparing the Docker Registry* :-
 
 Docker Registry is run as a Docker container
 
 1. Create a Self Signed Certificate 
+```
 mkdir -p certs && openssl req \
 	-newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key \
 	-x509 -days 365 -out certs/domain.crt
+```
 
 use the CN as the Host Name of the Registry Server / Registry Host in the above command.
 
 2. Copy the Domain certificate "domain.crt" to the /etc/docker/certs.d/<REGISTRY_HOST>:5000/ca.crt
 
 3. Run the Docker Registry 
-
+```
   docker run -d -p 5000:5000 \
     -e REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry \
     -v <LOCATION_TO_MOUNT_THE_CONTAINER_FILE_SYSTEM>:/var/lib/registry \
     --restart=always --name registry registry:2
-
+```
 
 
