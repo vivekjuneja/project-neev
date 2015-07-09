@@ -290,8 +290,22 @@ clusters:
           memory: 512
           instances: 1          
         routing: 
-          weight: 100  # weight in percentage   
-
+          weight: 50  # weight in percentage   
+       breed:
+          name: petclinic-frontend:1.0.1
+          deployable: 10.52.179.232:5000/spring-petclinic-app:23
+          ports:
+            port: 8080/http
+          environment_variables:
+            DATABASE_BACKEND: $database_backend.host:$database_backend.ports.port
+          dependencies:
+            database_backend: petclinic-backend:1.0.0
+        scale:
+          cpu: 0.5
+          memory: 512
+          instances: 1          
+        routing: 
+          weight: 50  # weight in percentage 	
 
   database_backend: 
     services:
@@ -325,6 +339,8 @@ b. Log Dashboard for all components :-
    - Docker Daemon
    - Docker Private Registry
    - Application Containers running over Mesos
+   
+   We use Elastic Search, Logstash, Kibana for log aggregation and dashboard. 
    
 c. Unified Service Health Check for all components :-
    - Jenkins
