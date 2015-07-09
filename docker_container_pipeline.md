@@ -1,14 +1,14 @@
-**Purpose** :-
+#Purpose :-
 
 Demonstrate that we can setup a simple Deployment Pipeline that builds a Project, and deploys consistently to any type of infrastructure
 
-**Why** :-
+#Why :-
 
 To build Agile infrastructure, it is important to have a valid Demonstration that underlies the core idea of a fast feedback loop :- consistent, automated development to deployment loops. 
 
-**Setup** :-
+#Setup :-
 
-*We need the following components for the system* :-
+**We need the following components for the system** :-
 
 1. Jenkins for CI and CD Orchestration
 2. Mesos Cluster with Marathon - that supports Docker Containerizer
@@ -17,7 +17,7 @@ To build Agile infrastructure, it is important to have a valid Demonstration tha
 5. Bakery Server
 6. VAMP Cluster (for Canary Release as of now)
 
-*Overall steps to use the system for a Project* :-
+**Overall steps to use the system for a Project** :-
 
 1. Dockerize the current Project (example :- Monolithic : Single application has all the dependencies, can use external data sources, caching etc.)
 
@@ -135,7 +135,7 @@ sed -i "s/deployed_service_name/${deployed_service_name}/g" deploy_app.json.tmp 
 curl -X POST -H "Content-Type: application/json" http://${deployment_endpoint}/v2/groups?force=true -d@deploy_app.json.tmp #Make a Call to Marathon to deploy a new Copy of the Application instance
 ```
 
-*Preparing Mesos Infrastructure (Standalone)* :-
+**Preparing Mesos Infrastructure (Standalone)** :-
 
 Mesos Cluster with Marathon is installed on an individual VM that uses Docker Containerizer for deploying workload
 
@@ -171,7 +171,7 @@ Mesos Cluster with Marathon is installed on an individual VM that uses Docker Co
   curl -X DELETE -H "Content-Type: application/json" http://<MARATHON_URL>/v2/apps/<APP_DESCRIPTOR> -d@<DEPLOYMENT_JSON_FILE>
   ```
 
-*Preparing the Docker Registry* :-
+**Preparing the Docker Registry** :-
 
 Docker Registry is run as a Docker container
 
