@@ -1,8 +1,8 @@
-**Purpose :-
+*Purpose* :-
 
 Demonstrate that we can setup a simple Deployment Pipeline that builds a Project, and deploys consistently to any type of infrastructure
 
-**Setup 
+*Setup* :-
 
 We need the following components for the system :-
 
