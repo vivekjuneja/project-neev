@@ -20,6 +20,7 @@ Demonstrate that we can setup a simple Deployment Pipeline that builds a Project
 2. Create a Deployment JSON for the Current Project - will be used to deploy on Mesos 
  - Each Project is deployed via a Deployment JSON file that is essential a payload to communicate with Marathon to initiate deployment
  - Let us look at a Sample Deployment JSON for a simple Java Spring based web Application Petclinic :-
+```
 {
     "id": "/deployed_service_name",
     "groups": [
@@ -81,7 +82,7 @@ Demonstrate that we can setup a simple Deployment Pipeline that builds a Project
         }
     ]
 }
- 
+```
 
 
 3. Use the Jenkins Project template to arrive at a customized Project build and deployment template
@@ -90,36 +91,41 @@ Demonstrate that we can setup a simple Deployment Pipeline that builds a Project
 
 Jenkins is run as a Docker Container. Its a Standalone system for now. 
 
+```
 docker run -d -v <LOCATION_OF_THE_DOCKER_SOCKET>:/var/run/docker.sock -v <LOCATION_OF_DOCKER_BINARY>:/usr/bin/docker -v <LOCATION_OF_THE_JENKINS_DATA_DIRECTORY>:/var/jenkins_home -v <LOCATION_OF_THE_SSH_KEY_DIRECTORY_CONFIGURED_FOR_GIT>:/var/jenkins/.ssh <JENKINS_DOCKER_IMAGE> 
+```
 
 Eg:- 
 
+```
 docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/bin/docker -v /var/local/jenkins_data:/var/jenkins_home -v /Users/testuser/.ssh/:/var/jenkins_home/.ssh/ localhost:5000/jenkins
-
+```
 
 In the above command, we allow Jenkins (running in Docker itself) to use Docker to perform Build and Push to Registry. We also provide Jenkins the access to the SSH Keys that will be used to connect to Github
 
 
 In a typical Jenkins Project, following are the key Things that are put in as "Post" Build Activities :-
-
+```
 sudo docker build -t ${image_registry_location}/${deployed_service_name}:${BUILD_ID} . #Build the Docker Container Image for the deployable
 
 sudo docker push ${image_registry_location}/${deployed_service_name}:${BUILD_ID} #Push the built Docker Image to the Docker Registry
 
 curl -X DELETE -H "Content-Type: application/json" http://${deployment_endpoint}/v2/groups/${deployed_service_name} #Remove the current deployed Application on the Mesos Cluster using Marathon API
+```
 
-THe below steps are to modify the Deployment JSON file that exists in each Project directory. This Deployment JSON contains the Marathon Deployment information for that application. 
+The below steps are to modify the Deployment JSON file that exists in each Project directory. This Deployment JSON contains the Marathon Deployment information for that application. 
 
+```
 cp -f deploy_app.json deploy_app.json.tmp # Take a copy of the JSON before modifying 
 
 sed -i "s/latest/${BUILD_ID}/g" deploy_app.json.tmp #Set the Jenkins Build number to the Image version 
 
-sed -i "s/image_registry_location/${image_registry_location}/g" deploy_app.json.tmp #Set the Image registry location 
+sed -i "s/image_registry_location/${image_registry_location}/g" deploy_app.json.tmp #Set the Image registry location
 
 sed -i "s/deployed_service_name/${deployed_service_name}/g" deploy_app.json.tmp #Set the Service Name to be used for deployment 
 
 curl -X POST -H "Content-Type: application/json" http://${deployment_endpoint}/v2/groups?force=true -d@deploy_app.json.tmp #Make a Call to Marathon to deploy a new Copy of the Application instance
-
+```
 
 *Preparing Mesos Infrastructure (Standalone)* :-
 
