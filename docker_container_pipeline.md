@@ -141,7 +141,7 @@ Mesos Cluster with Marathon is installed on an individual VM that uses Docker Co
 
 1. Use the Vagrant Mesos to set it up on Virtual Box : https://github.com/everpeace/vagrant-mesos
 
-2. Docker must be configured to run with insecure private docker registry
+2. Docker must be configured to run with insecure private docker registry (if not secured)
 
 	-Option 1 - Modify the Docker configuration to use the private docker registry
 
