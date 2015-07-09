@@ -343,7 +343,31 @@ How does the Bakery work :-
 3. Create Test cases to test the Baked images
 4. *Push the Image to Jenkins CI to push it to Private Registry*
 
+Example:-
+1. Standard Tomcat Container images are NOT Good enough. We need to customize it to make it configurable when deploying applications
 
+The Baker configures the "setenv.sh" file that sets a JAVA_OPT variable containing the JDBC URL of the Application. Note the $DATABASE_BACKEND used in the jdbc.url. This environment variable will be set at Runtime, when Container is deployed. 
+
+```
+export JAVA_OPTS="-Djdbc.url=jdbc:mysql://$DATABASE_BACKEND/petclinic"
+```
+
+The Dockerfile for new version of Tomcat is baked like this :-
+
+```
+FROM 10.52.179.232:5000/tomcat:8.0
+WORKDIR /usr/local/tomcat
+COPY setenv.sh bin/
+
+EXPOSE 8080
+CMD ["catalina.sh", "run"]
+```
+
+Now, when this Tomcat Container Image is used, it will be able to configure the JDBC URL based upon the runtime configuration. For example :-
+
+```
+docker run -v /target/petclinic.war:/usr/local/tomcat/webapps/petclinic.war -e DATABASE_BACKEND=192.168.33.12:31000 tomcat:revised
+```
 
 **Monitor and Manage the entire Stack** :-
 
