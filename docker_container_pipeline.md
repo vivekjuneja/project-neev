@@ -275,13 +275,15 @@ endpoints:
 clusters:
 
   petclinic:
-    services: # services is now a list of breeds
+    services: 
       -
         breed:
           name: petclinic:1.0.0
           deployable: PRIVATE_DOCKER_REGISTRY:5000/spring-petclinic-app:1
           ports:
             port: 8080/http
+        dependencies:
+          database_backend: database:1.0.0
         scale:
           cpu: 0.5
           memory: 512
@@ -290,18 +292,36 @@ clusters:
           weight: 50  # weight in percentage           
       -
         breed:
-          name: petclinic:1.1.0 # a new version of our service
+          name: petclinic:1.1.0 # a new version of the petclinic spring app 
           deployable: PRIVATE_DOCKER_REGISTRY:5000/spring-petclinic-app:2
           ports:
             port: 8080/http
+        dependencies:
+          database_backend: database:1.0.0
         scale:
           cpu: 0.5    
           memory: 512
           instances: 1  
         routing: 
-          weight: 50  
+          weight: 50 
+    database_backend: 
+      -
+        breed:
+          name: database:1.0.0
+          deployable: PRIVATE_DOCKER_REGISTRY:5000/mysql
+          ports:
+            port: 3306/http
+        dependencies:
+          database_backend: database:1.0.0
+        scale:
+          cpu: 0.5
+          memory: 512
+          instances: 1          
+        routing: 
+          weight: 50  # weight in percentage  
 ```
 
+In the above example, both the changed and unchanged service use the same database. That means, there has been No change to the Database. 
 
 **Monitor and Manage the entire Stack** :-
 
