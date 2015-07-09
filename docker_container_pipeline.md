@@ -336,7 +336,7 @@ b. Log Dashboard for all components :-
    - Docker Private Registry
    - Application Containers running over Mesos
    
-c. Unified Service Health for all components :-
+c. Unified Service Health Check for all components :-
    - Jenkins
    - Mesos, Marathon
    - Docker Daemon
