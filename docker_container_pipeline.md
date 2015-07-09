@@ -15,7 +15,75 @@ Demonstrate that we can setup a simple Deployment Pipeline that builds a Project
 *Overall steps to use the system for a Project* :-
 
 1. Dockerize the current Project (example :- Monolithic : Single application has all the dependencies, can use external data sources, caching etc.)
+ - How to dockerize a Project ?
+ - How to test if the Dockerization worked ?
 2. Create a Deployment JSON for the Current Project - will be used to deploy on Mesos 
+ - Each Project is deployed via a Deployment JSON file that is essential a payload to communicate with Marathon to initiate deployment
+ - Let us look at a Sample Deployment JSON for a simple Java Spring based web Application Petclinic :-
+{
+    "id": "/deployed_service_name",
+    "groups": [
+        {
+            "id": "/deployed_service_name/data",
+            "apps": [
+                {
+                    "id": "/deployed_service_name/data/mysql-db",
+                    "cpus": 0.5,
+                    "mem": 512,
+                    "container": {
+                        "type": "DOCKER",
+                        "docker": {
+                            "image": "mysql",
+                            "network": "BRIDGE",
+                            "portMappings": [
+                                {
+                                    "containerPort": 3306,
+                                    "servicePort": 13306
+                                }
+                            ]
+                        }
+                    },
+                    "env": {
+                        "MYSQL_ROOT_PASSWORD": "root",
+			             "MYSQL_DATABASE" : "petclinic"
+                    },
+  		   "healthChecks" : [{
+			"protocol" : "COMMAND",
+			"command" : { "value" : "mysql -u root -proot -h 172.17.42.1 -P 13306"},
+ 			"maxConsecutiveFailures" : 3
+		   }]
+                }
+            ]
+        },
+        {
+            "id": "/deployed_service_name/app",
+            "dependencies" : ["/deployed_service_name/data"],
+            "apps": [
+                {
+                    "id": "/deployed_service_name/app/spring-app",
+                    "cpus": 0.5,
+                    "mem": 512,
+                    "container": {
+                        "type": "DOCKER",
+                        "docker": {
+                            "image": "image_registry_location/deployed_service_name:latest",
+                            "network": "BRIDGE",
+                            "portMappings": [
+                                {
+                                    "containerPort": 8080,
+                                    "servicePort": 4569
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
+ 
+
+
 3. Use the Jenkins Project template to arrive at a customized Project build and deployment template
 
 *Preparing Jenkins Infrastructure* :-
@@ -40,7 +108,7 @@ sudo docker push ${image_registry_location}/${deployed_service_name}:${BUILD_ID}
 
 curl -X DELETE -H "Content-Type: application/json" http://${deployment_endpoint}/v2/groups/${deployed_service_name} #Remove the current deployed Application on the Mesos Cluster using Marathon API
 
-# THe below steps are to modify the Deployment JSON file that exists in each Project directory. This Deployment JSON contains the Marathon Deployment information for that application. 
+THe below steps are to modify the Deployment JSON file that exists in each Project directory. This Deployment JSON contains the Marathon Deployment information for that application. 
 
 cp -f deploy_app.json deploy_app.json.tmp # Take a copy of the JSON before modifying 
 
