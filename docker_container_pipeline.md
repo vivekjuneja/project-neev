@@ -2,15 +2,20 @@
 
 Demonstrate that we can setup a simple Deployment Pipeline that builds a Project, and deploys consistently to any type of infrastructure
 
+**Why** :-
+
+To build Agile infrastructure, it is important to have a valid Demonstration that underlies the core idea of a fast feedback loop :- consistent, automated development to deployment loops. 
+
 **Setup** :-
 
 *We need the following components for the system* :-
 
 1. Jenkins for CI and CD Orchestration
-2. Mesos Cluster with Marathon - support Docker Containerizer
-3. Git Repository
+2. Mesos Cluster with Marathon - that supports Docker Containerizer
+3. Git Repository (basically any Source Repository will do)
 4. Docker Private Registry
-5. VAMP Cluster (for Canary Release as of now)
+5. Bakery Server
+6. VAMP Cluster (for Canary Release as of now)
 
 *Overall steps to use the system for a Project* :-
 
@@ -84,7 +89,6 @@ Demonstrate that we can setup a simple Deployment Pipeline that builds a Project
 }
 ```
 
-
 3. Use the Jenkins Project template to arrive at a customized Project build and deployment template
 
 *Preparing Jenkins Infrastructure* :-
@@ -133,10 +137,11 @@ Mesos Cluster with Marathon is installed on an individual VM that uses Docker Co
 
 1. Use the Vagrant Mesos to set it up on Virtual Box : https://github.com/everpeace/vagrant-mesos
 
-2. Docker must be configured to run with insecure private docker registry. 
-	#Option 1 - Modify the Docker configuration to use the private docker registry
+2. Docker must be configured to run with insecure private docker registry
 
-	#Option 2 - Stop the pre-existing Docker service, and manually run the Docker runtime
+	-Option 1 - Modify the Docker configuration to use the private docker registry
+
+	-Option 2 - Stop the pre-existing Docker service, and manually run the Docker runtime
 	- /usr/bin/docker -d --host=unix:///var/run/docker.sock --restart=false --insecure-registry <REGISTRY_HOST>:<IP_ADDRESS>
 
 3. Test if the Docker Containers can be deployed on Mesos slave via the Marathon API : https://mesosphere.github.io/marathon/docs/native-docker.html
