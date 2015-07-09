@@ -198,6 +198,110 @@ use the CN as the Host Name of the Registry Server / Registry Host in the above 
 
 VAMP is a micro-services platform that allows Netflix style Canary Release, SLA management including metrics, and overall Service Management. 
 
+As of now, we want to use VAMP to perform Canary Releases for the applications that use this Pipeline.
+
+*How do we use VAMP in our Infrastructure*
+
+a. We deploy the VAMP router as mentioned on http://vamp.io/documentation/getting-started/installation/
+
+Call the Marathon URL to deploy the VAMP Router:-
+
+```
+curl -v -H "Content-Type: application/json" -X POST --data @vamp-router.json http://10.143.22.49:8080/v2/apps
+```
+
+The vamp-router.json is as following :-
+
+
+```
+ {
+      "id": "main-router",
+      "container": {
+          "docker": {
+              "image": "magneticio/vamp-router:latest",
+              "network": "HOST"
+          },
+          "type": "DOCKER"
+      },
+      "instances": 1,
+      "cpus": 0.5,
+      "mem": 512,
+      "env": {},
+      "ports": [
+          0
+      ],
+      "args": [
+          ""
+      ]
+    }
+```
+
+Now, we will deploy the VAMP core on an another Docker container, using the instructions as mentioned in the above link.
+
+Set some environment variables that VAMP core would use :-
+
+```
+export MARATHON_MASTER=<MARATHON_HOST_IP>
+export VAMP_MARATHON_URL=http://$MARATHON_MASTER:8080
+export VAMP_ROUTER_HOST=<VAMP_ROUTER_IP_DEPLOYED_ON_MESOS>
+export VAMP_ROUTER_PORT=10001
+export VAMP_ROUTER_URL=http://$VAMP_ROUTER_HOST:$VAMP_ROUTER_PORT
+```
+
+Now, we will deploy VAMP Core on a local container :-
+
+```
+docker run -d --name=vamp -p 81:80 -p 8081:8080 -p 10002:10001 -p 8084:8083 -e VAMP_MARATHON_URL=http://$MARATHON_MASTER:8080 -e VAMP_ROUTER_URL=http://$VAMP_ROUTER_HOST:10001 -e VAMP_ROUTER_HOST=$VAMP_ROUTER_HOST magneticio/vamp-mesosphere:latest
+```
+
+For the sample application here, Spring PetClinic, following is the Deployment JSON we use to deploy the Application. In order to do this, we have to issue REST API call to the VAMP CORE  :-
+
+```
+curl -v -X POST --data-binary @deploy_spring_petclinic.yaml -H "Content-Type: application/x-yaml" http://<VAMP_CORE_HOST>:8080/api/v1/deployments
+```
+
+Here, the VAMP_CORE_HOST is the Host IP address where the VAMP Core Docker Container is currently running. 
+
+The "deploy_spring_petclinic.yaml" file holds the deployment manifest that is used by VAMP to deploy on Mesos. 
+
+For demonstrating the Canary Release, we made changes to the Spring PetClinic Application. The changed and unchanged version of the Spring Petclinic are bundled as independent Docker Container Images identified by different version number. With that background, let us look at the "deploy_spring_petclinic.yaml" :-
+
+```
+name: petclinic:1.0
+
+endpoints:
+  petclinic.port: 9050
+
+clusters:
+
+  petclinic:
+    services: # services is now a list of breeds
+      -
+        breed:
+          name: petclinic:1.0.0
+          deployable: PRIVATE_DOCKER_REGISTRY:5000/spring-petclinic-app:1
+          ports:
+            port: 8080/http
+        scale:
+          cpu: 0.5
+          memory: 512
+          instances: 1          
+        routing: 
+          weight: 50  # weight in percentage           
+      -
+        breed:
+          name: petclinic:1.1.0 # a new version of our service
+          deployable: PRIVATE_DOCKER_REGISTRY:5000/spring-petclinic-app:2
+          ports:
+            port: 8080/http
+        scale:
+          cpu: 0.5    
+          memory: 512
+          instances: 1  
+        routing: 
+          weight: 50  
+```
+
 
 **Monitor and Manage the entire Stack** :-
 
