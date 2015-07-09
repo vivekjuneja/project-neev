@@ -20,8 +20,13 @@ To build Agile infrastructure, it is important to have a valid Demonstration tha
 *Overall steps to use the system for a Project* :-
 
 1. Dockerize the current Project (example :- Monolithic : Single application has all the dependencies, can use external data sources, caching etc.)
+
  - How to dockerize a Project ?
+
  - How to test if the Dockerization worked ?
+
+2. Use the Jenkins Project template to arrive at a customized Project build and deployment template
+
 2. Create a Deployment JSON for the Current Project - will be used to deploy on Mesos 
  - Each Project is deployed via a Deployment JSON file that is essential a payload to communicate with Marathon to initiate deployment
  - Let us look at a Sample Deployment JSON for a simple Java Spring based web Application Petclinic :-
@@ -89,9 +94,8 @@ To build Agile infrastructure, it is important to have a valid Demonstration tha
 }
 ```
 
-3. Use the Jenkins Project template to arrive at a customized Project build and deployment template
 
-*Preparing Jenkins Infrastructure* :-
+**Preparing Jenkins Infrastructure** :-
 
 Jenkins is run as a Docker Container. Its a Standalone system for now. 
 
