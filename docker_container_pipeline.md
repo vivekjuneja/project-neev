@@ -194,7 +194,7 @@ use the CN as the Host Name of the Registry Server / Registry Host in the above 
     --restart=always --name registry registry:2
 ```
 
-**Using VAMP to allow Canary release** :-
+**EXPERIMENTS : Using VAMP to allow Canary release** :-
 
 VAMP is a micro-services platform that allows Netflix style Canary Release, SLA management including metrics, and overall Service Management. 
 
@@ -326,6 +326,24 @@ clusters:
 ```
 
 In the above example, both the changed and unchanged service use the same database. That means, there has been No change to the Database. 
+
+
+**BAKERY Server** :-
+
+The purpose of Bakery Server :-
+
+1. Access to Package Repository (Chef recipes, ```ZINST packages```, Puppet Scripts)
+2. Create Base Images that use Standard Package tool for package deployment
+3. Create smallest images that are ready to use
+
+How does the Bakery work :-
+
+1. On Bakery, Baker pulls out standard Base (Golden) Container Images from the Private Docker registry
+2. Based on the specification, installs the standard packages needed to support the spec
+3. Create Test cases to test the Baked images
+4. *Push the Image to Jenkins CI to push it to Private Registry*
+
+
 
 **Monitor and Manage the entire Stack** :-
 
