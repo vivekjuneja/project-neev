@@ -194,4 +194,28 @@ use the CN as the Host Name of the Registry Server / Registry Host in the above 
     --restart=always --name registry registry:2
 ```
 
+**Using VAMP to allow Canary release** :-
 
+VAMP is a micro-services platform that allows Netflix style Canary Release, SLA management including metrics, and overall Service Management. 
+
+
+**Monitor and Manage the entire Stack** :-
+
+We want to establish some important considerations when using this pipeline in real projects :-
+
+a. Centralized log aggregation for all Application Containers deployed on this stack.
+
+b. Log Dashboard for all components :-
+   - Jenkins
+   - Mesos, Marathon
+   - Docker Daemon
+   - Docker Private Registry
+   - Application Containers running over Mesos
+   
+c. Unified Service Health for all components :-
+   - Jenkins
+   - Mesos, Marathon
+   - Docker Daemon
+   - Docker Private Registry
+   - Application Containers running over Mesos
+   
