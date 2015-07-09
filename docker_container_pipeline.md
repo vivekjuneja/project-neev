@@ -275,50 +275,40 @@ endpoints:
 clusters:
 
   petclinic:
-    services: 
-      -
+    services: # services is now a list of breeds
         breed:
-          name: petclinic:1.0.0
-          deployable: PRIVATE_DOCKER_REGISTRY:5000/spring-petclinic-app:1
+          name: petclinic-frontend:1.0.0
+          deployable: 10.52.179.232:5000/spring-petclinic-app:24
           ports:
             port: 8080/http
-        dependencies:
-          database_backend: database:1.0.0
+          environment_variables:
+            DATABASE_BACKEND: $database_backend.host:$database_backend.ports.port
+          dependencies:
+            database_backend: petclinic-backend:1.0.0
         scale:
           cpu: 0.5
           memory: 512
           instances: 1          
         routing: 
-          weight: 50  # weight in percentage           
-      -
+          weight: 100  # weight in percentage   
+
+
+  database_backend: 
+    services:
         breed:
-          name: petclinic:1.1.0 # a new version of the petclinic spring app 
-          deployable: PRIVATE_DOCKER_REGISTRY:5000/spring-petclinic-app:2
-          ports:
-            port: 8080/http
-        dependencies:
-          database_backend: database:1.0.0
-        scale:
-          cpu: 0.5    
-          memory: 512
-          instances: 1  
-        routing: 
-          weight: 50 
-    database_backend: 
-      -
-        breed:
-          name: database:1.0.0
-          deployable: PRIVATE_DOCKER_REGISTRY:5000/mysql
+          name: petclinic-backend:1.0.0
+          deployable: mysql
           ports:
             port: 3306/http
-        dependencies:
-          database_backend: database:1.0.0
+          environment_variables:
+            MYSQL_ROOT_PASSWORD: root
         scale:
           cpu: 0.5
           memory: 512
           instances: 1          
         routing: 
-          weight: 50  # weight in percentage  
+          weight: 100  # weight in percentage  
+
 ```
 
 In the above example, both the changed and unchanged service use the same database. That means, there has been No change to the Database. 
