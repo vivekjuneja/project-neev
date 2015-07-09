@@ -1,10 +1,10 @@
-*Purpose* :-
+**Purpose** :-
 
 Demonstrate that we can setup a simple Deployment Pipeline that builds a Project, and deploys consistently to any type of infrastructure
 
-*Setup* :-
+**Setup** :-
 
-We need the following components for the system :-
+*We need the following components for the system* :-
 
 1. Jenkins for CI and CD Orchestration
 2. Mesos Cluster with Marathon - support Docker Containerizer
@@ -12,22 +12,21 @@ We need the following components for the system :-
 4. Docker Private Registry
 5. VAMP Cluster (for Canary Release as of now)
 
-Overall steps to use the system for a Project :-
+*Overall steps to use the system for a Project* :-
 
 1. Dockerize the current Project (example :- Monolithic : Single application has all the dependencies, can use external data sources, caching etc.)
 2. Create a Deployment JSON for the Current Project - will be used to deploy on Mesos 
 3. Use the Jenkins Project template to arrive at a customized Project build and deployment template
 
+*Preparing Jenkins Infrastructure* :-
 
-#Preparing Jenkins Infrastructure :-
-
-# Jenkins is run as a Docker Container. Its a Standalone system for now. 
+Jenkins is run as a Docker Container. Its a Standalone system for now. 
 
 docker run -d -v <LOCATION_OF_THE_DOCKER_SOCKET>:/var/run/docker.sock -v <LOCATION_OF_DOCKER_BINARY>:/usr/bin/docker -v <LOCATION_OF_THE_JENKINS_DATA_DIRECTORY>:/var/jenkins_home -v <LOCATION_OF_THE_SSH_KEY_DIRECTORY_CONFIGURED_FOR_GIT>:/var/jenkins/.ssh <JENKINS_DOCKER_IMAGE> 
 
 Eg:- 
 
-docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/bin/docker -v /Users/admin/Projects/jenkins_data_2:/var/jenkins_home -v /Users/admin/.ssh/:/var/jenkins_home/.ssh/ 10.52.179.232:5000/jenkins
+docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/bin/docker -v /var/local/jenkins_data:/var/jenkins_home -v /Users/testuser/.ssh/:/var/jenkins_home/.ssh/ localhost:5000/jenkins
 
 
 In the above command, we allow Jenkins (running in Docker itself) to use Docker to perform Build and Push to Registry. We also provide Jenkins the access to the SSH Keys that will be used to connect to Github
@@ -54,15 +53,14 @@ sed -i "s/deployed_service_name/${deployed_service_name}/g" deploy_app.json.tmp 
 curl -X POST -H "Content-Type: application/json" http://${deployment_endpoint}/v2/groups?force=true -d@deploy_app.json.tmp #Make a Call to Marathon to deploy a new Copy of the Application instance
 
 
+*Preparing Mesos Infrastructure (Standalone)* :-
 
-Preparing Mesos Infrastructure (Standalone) :-
-
-#Mesos Cluster with Marathon is Setup a individual VM that has Docker Containerizer 
+Mesos Cluster with Marathon is installed on an individual VM that uses Docker Containerizer for deploying workload
 
 1. Use the Vagrant Mesos to set it up on Virtual Box : https://github.com/everpeace/vagrant-mesos
 
 2. Docker must be configured to run with insecure private docker registry. 
-	#Option 1 - Modify the Docker configuration
+	#Option 1 - Modify the Docker configuration to use the private docker registry
 
 	#Option 2 - Stop the pre-existing Docker service, and manually run the Docker runtime
 	- /usr/bin/docker -d --host=unix:///var/run/docker.sock --restart=false --insecure-registry <REGISTRY_HOST>:<IP_ADDRESS>
@@ -81,13 +79,12 @@ curl -X POST -H "Content-Type: application/json" http://<MARATHON_URL>/v2/apps -
 # Deploying an Application that is composed of many entities
 curl -X POST -H "Content-Type: application/json" http://<MARATHON_URL>/v2/groups -d@<DEPLOYMENT_JSON_FILE>
 
+# Remove the current Application from the Mesos 
+curl -X DELETE -H "Content-Type: application/json" http://<MARATHON_URL>/v2/apps/<APP_DESCRIPTOR> -d@<DEPLOYMENT_JSON_FILE>
 
+*Preparing the Docker Registry* :-
 
-
-
-Preparing the Docker Registry :-
-
-$ Docker Registry is run as a Docker container
+Docker Registry is run as a Docker container
 
 1. Create a Self Signed Certificate 
 mkdir -p certs && openssl req \
